@@ -14,6 +14,8 @@
     <a href="https://github.com/Artem-Schander/L5Modular/blob/master/LICENSE"><img src="https://img.shields.io/packagist/l/artem-schander/l5-modular" alt="license"></a>
 </p>
 
+# Some changes have been made for a custom project
+
 <hr>
 
 This package allows you to organize your Laravel project in a modular manner.  

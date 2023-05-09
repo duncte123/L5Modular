@@ -5,4 +5,8 @@ declare(strict_types=1);
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('DummyTitle', 'DummyModuleNameController@index');
+Route::controller(DummyModuleNameController::class)
+    ->name('DummyModuleName.')
+    ->group(function(): void {
+        Route::get('DummyTitle', 'index')->name('index');
+    });

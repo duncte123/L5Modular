@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use DummyNamespace\DummyModuleNameController;
+use App\Modules\DummyModuleName\Http\Controllers\DummyModuleNameController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 

@@ -32,7 +32,7 @@ Check out the full documentation at [l5modular.github.io](https://l5modular.gith
 The easiest way to install this package is through your terminal via Composer.  
 Run the following command in a bash prompt from your projects root
 ```bash
-composer require artem-schander/l5-modular
+composer require duncte123/l5-modular
 ```
 
 #### Requirements

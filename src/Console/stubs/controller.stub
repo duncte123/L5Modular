@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DummyNamespace;
 
 use Illuminate\Http\Request;
@@ -13,8 +15,10 @@ class DummyClass extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function welcome()
+    public function index()
     {
-        return view("DummyModuleName::welcome");
+        return response()->json([
+            'message' => 'Hello world!',
+        ]);
     }
 }

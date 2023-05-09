@@ -46,7 +46,7 @@ class ModuleServiceProvider extends ServiceProvider
     {
         $this->registerConfig($name);
 
-        $enabled = config("{$name}.enabled", true);
+        $enabled = config("{$name}.enabled", config('modules.enabled', true));
         if ($enabled) {
             $this->registerRoutes($name);
             $this->registerHelpers($name);

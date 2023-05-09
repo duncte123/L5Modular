@@ -46,7 +46,8 @@ class ModuleServiceProvider extends ServiceProvider
     {
         $this->registerConfig($name);
 
-        $enabled = config("{$name}.enabled", config('modules.enabled', true));
+        $enabled = config("{$name}.enabled", config('modules.default.enabled', true));
+
         if ($enabled) {
             $this->registerRoutes($name);
             $this->registerHelpers($name);
@@ -67,7 +68,9 @@ class ModuleServiceProvider extends ServiceProvider
     protected function registerConfig(string $module)
     {
         $key = "modules.specific.{$module}";
-        $config = $this->app['config']->get($key, []);
+        $config = $this->app['config']->get($key, [
+            'enabled' => config('modules.default.enabled', true),
+        ]);
 
         $file = app_path("Modules/{$module}/config.php");
         if ($this->files->exists($file)) {

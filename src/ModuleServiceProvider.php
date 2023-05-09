@@ -13,12 +13,17 @@ class ModuleServiceProvider extends ServiceProvider
 {
     use Traits\RegisteresCommands;
 
+    /**
+     * @var null | string
+     */
+    public static $domainRouting = null;
+
     protected $files;
 
     /**
      * Bootstrap the application services.
      *
-     * @param  \Illuminate\Filesystem\Filesystem  $files
+     * @param \Illuminate\Filesystem\Filesystem $files
      *
      * @return void
      */
@@ -38,7 +43,7 @@ class ModuleServiceProvider extends ServiceProvider
     /**
      * Register a module by its name
      *
-     * @param  string $name
+     * @param string $name
      *
      * @return void
      */
@@ -61,7 +66,7 @@ class ModuleServiceProvider extends ServiceProvider
     /**
      * Register the config file for a module by its name
      *
-     * @param  string $module
+     * @param string $module
      *
      * @return void
      */
@@ -79,7 +84,7 @@ class ModuleServiceProvider extends ServiceProvider
 
         if ($config) {
             $this->app['config']->set($key, $config);
-            if (! $this->app['config']->get($module)) {
+            if (!$this->app['config']->get($module)) {
                 $this->app['config']->set($module, $config);
             }
         }
@@ -88,13 +93,13 @@ class ModuleServiceProvider extends ServiceProvider
     /**
      * Register the routes for a module by its name
      *
-     * @param  string $module
+     * @param string $module
      *
      * @return void
      */
     protected function registerRoutes(string $module)
     {
-        if (! $this->app->routesAreCached()) {
+        if (!$this->app->routesAreCached()) {
             extract($this->getRoutingConfig($module));
 
             foreach ($types as $type) {
@@ -106,10 +111,10 @@ class ModuleServiceProvider extends ServiceProvider
     /**
      * Registeres a simgle route
      *
-     * @param  string $module
-     * @param  string $path
-     * @param  string $namespace
-     * @param  string $type
+     * @param string $module
+     * @param string $path
+     * @param string $namespace
+     * @param string $type
      *
      * @return void
      */
@@ -120,17 +125,27 @@ class ModuleServiceProvider extends ServiceProvider
 
         $file = str_replace('//', '/', app_path("Modules/{$module}/{$path}/{$file}"));
 
-        $allowed = [ 'web', 'api', 'simple' ];
+        $allowed = ['web', 'api', 'simple'];
         if (in_array($type, $allowed) && $this->files->exists($file)) {
-            if ($type === 'simple') Route::namespace($namespace)->group($file);
-            else Route::middleware($type)->namespace($namespace)->group($file);
+            if ($type === 'simple') {
+                Route::namespace($namespace)->group($file);
+            } else {
+                $routeSetup = Route::middleware($type)
+                    ->namespace($namespace);
+
+                if (self::$domainRouting) {
+                    $routeSetup = $routeSetup->domain(self::$domainRouting);
+                }
+
+                $routeSetup->group($file);
+            }
         }
     }
 
     /**
      * Collect the needed data to register the routes
      *
-     * @param  string $module
+     * @param string $module
      *
      * @return array
      */
@@ -148,7 +163,7 @@ class ModuleServiceProvider extends ServiceProvider
     /**
      * Register the helpers file for a module by its name
      *
-     * @param  string $module
+     * @param string $module
      *
      * @return void
      */
@@ -162,7 +177,7 @@ class ModuleServiceProvider extends ServiceProvider
     /**
      * Register the views for a module by its name
      *
-     * @param  string $module
+     * @param string $module
      *
      * @return void
      */
@@ -176,7 +191,7 @@ class ModuleServiceProvider extends ServiceProvider
     /**
      * Register the translations for a module by its name
      *
-     * @param  string $module
+     * @param string $module
      *
      * @return void
      */
@@ -190,7 +205,7 @@ class ModuleServiceProvider extends ServiceProvider
     /**
      * Register the migrations for a module by its name
      *
-     * @param  string $module
+     * @param string $module
      *
      * @return void
      */
@@ -204,7 +219,7 @@ class ModuleServiceProvider extends ServiceProvider
     /**
      * Register the factories for a module by its name
      *
-     * @param  string $module
+     * @param string $module
      *
      * @return void
      */
@@ -218,9 +233,9 @@ class ModuleServiceProvider extends ServiceProvider
     /**
      * Prepare component registration
      *
-     * @param  string $module
-     * @param  string $component
-     * @param  string $file
+     * @param string $module
+     * @param string $component
+     * @param string $file
      *
      * @return string
      */
@@ -229,7 +244,7 @@ class ModuleServiceProvider extends ServiceProvider
         $path = config("{$module}.structure.{$component}", config("modules.default.structure.{$component}"));
         $resource = rtrim(str_replace('//', '/', app_path("Modules/{$module}/{$path}/{$file}")), '/');
 
-        if (! ($file && $this->files->exists($resource)) && ! (!$file && $this->files->isDirectory($resource))) {
+        if (!($file && $this->files->exists($resource)) && !(!$file && $this->files->isDirectory($resource))) {
             $resource = false;
         }
         return $resource;
@@ -258,7 +273,7 @@ class ModuleServiceProvider extends ServiceProvider
         $publishPath = $this->app->configPath('modules.php');
 
         $this->mergeConfigFrom($configPath, 'modules');
-        $this->publishes([ $configPath => $publishPath ], 'config');
+        $this->publishes([$configPath => $publishPath], 'config');
     }
 
     /**
@@ -268,7 +283,7 @@ class ModuleServiceProvider extends ServiceProvider
      */
     protected function registerService()
     {
-        $this->app->singleton('l5modular', function($app) {
+        $this->app->singleton('l5modular', function ($app) {
             return new L5Modular($app['config'], $app['files']);
         });
     }

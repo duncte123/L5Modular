@@ -9,5 +9,5 @@ use Illuminate\Support\Facades\Route;
 Route::controller(DummyModuleNameController::class)
     ->name('DummyModuleName.')
     ->group(function(): void {
-        Route::get('DummyTitle', 'index')->name('index');
+        Route::get('DummyTitle/values/{id}', 'index')->name('index');
     });
